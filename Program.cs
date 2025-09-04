@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProvaPub.Repository;
 using ProvaPub.Services;
+using ProvaPub.Services.Payments;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<RandomService>();
 builder.Services.AddDbContext<TestDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
+builder.Services.AddScoped<ProvaPub.Services.ProductService>();
+builder.Services.AddScoped<ProvaPub.Services.CustomerService>();
+builder.Services.AddScoped<IPayment, PixPayment>();
+builder.Services.AddScoped<IPayment, CreditCardPayment>();
+builder.Services.AddScoped<IPayment, PaypalPayment>();
+builder.Services.AddScoped<OrderService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

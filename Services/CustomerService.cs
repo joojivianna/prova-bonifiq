@@ -1,21 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProvaPub.Models;
+using ProvaPub.Models.Base;
 using ProvaPub.Repository;
+using ProvaPub.Services.Base;
+using ProvaPub.Services.Utils;
 
 namespace ProvaPub.Services
 {
-    public class CustomerService
+    public class CustomerService : BaseService<CustomerList>
     {
-        TestDbContext _ctx;
+        public PageList<CustomerList> ListCustomers(int page) => ListPaged(page);
 
-        public CustomerService(TestDbContext ctx)
-        {
-            _ctx = ctx;
-        }
+        private readonly IDateTimeProvider _dateTimeProvider;
+        
+        public CustomerService(TestDbContext ctx) : base(ctx) { }
 
-        public CustomerList ListCustomers(int page)
+        public CustomerService(TestDbContext ctx, IDateTimeProvider dateTimeProvider) : base(ctx)
         {
-            return new CustomerList() { HasNext = false, TotalCount = 10, Customers = _ctx.Customers.ToList() };
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<bool> CanPurchase(int customerId, decimal purchaseValue)
@@ -40,7 +42,9 @@ namespace ProvaPub.Services
                 return false;
 
             //Business Rule: A customer can purchases only during business hours and working days
-            if (DateTime.UtcNow.Hour < 8 || DateTime.UtcNow.Hour > 18 || DateTime.UtcNow.DayOfWeek == DayOfWeek.Saturday || DateTime.UtcNow.DayOfWeek == DayOfWeek.Sunday)
+            if (_dateTimeProvider.UtcNow.Hour < 8 || _dateTimeProvider.UtcNow.Hour > 18 ||
+                _dateTimeProvider.UtcNow.DayOfWeek == DayOfWeek.Saturday ||
+                _dateTimeProvider.UtcNow.DayOfWeek == DayOfWeek.Sunday)
                 return false;
 
 

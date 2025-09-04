@@ -1,9 +1,9 @@
-﻿namespace ProvaPub.Models
+﻿using ProvaPub.Models.Base;
+
+namespace ProvaPub.Models
 {
-	public class ProductList
+	public class ProductList : PageList<Product>
 	{
 		public List<Product> Products { get; set; }
-		public int TotalCount { get; set; }
-		public bool HasNext { get; set; }
 	}
 }

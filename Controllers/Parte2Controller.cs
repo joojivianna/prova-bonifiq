@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProvaPub.Models;
+using ProvaPub.Models.Base;
 using ProvaPub.Repository;
 using ProvaPub.Services;
 
@@ -19,23 +20,25 @@ namespace ProvaPub.Controllers
 		/// 
 		/// </summary>
 		TestDbContext _ctx;
-		public Parte2Controller(TestDbContext ctx)
+		private readonly ProductService _productService;
+        private readonly CustomerService _customerService;
+        public Parte2Controller(TestDbContext ctx, ProductService productService, CustomerService customerService)
 		{
-			_ctx = ctx;
+			_productService = productService;
+			_customerService = customerService;
+            _ctx = ctx;
 		}
 	
 		[HttpGet("products")]
-		public ProductList ListProducts(int page)
+		public PageList<ProductList> ListProducts(int page)
 		{
-			var productService = new ProductService(_ctx);
-			return productService.ListProducts(page);
+			return _productService.ListProducts(page);
 		}
 
 		[HttpGet("customers")]
-		public CustomerList ListCustomers(int page)
+		public PageList<CustomerList> ListCustomers(int page)
 		{
-			var customerService = new CustomerService(_ctx);
-			return customerService.ListCustomers(page);
+			return _customerService.ListCustomers(page);
 		}
 	}
 }

@@ -20,16 +20,18 @@ namespace ProvaPub.Controllers
 	[Route("[controller]")]
 	public class Parte3Controller :  ControllerBase
 	{
-		[HttpGet("orders")]
-		public async Task<Order> PlaceOrder(string paymentMethod, decimal paymentValue, int customerId)
-		{
-            var contextOptions = new DbContextOptionsBuilder<TestDbContext>()
-    .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Teste;Trusted_Connection=True;")
-    .Options;
+        private readonly OrderService _orderService;
 
-            using var context = new TestDbContext(contextOptions);
+        public Parte3Controller(OrderService orderService)
+        {
+            _orderService = orderService;
+        }
 
-            return await new OrderService(context).PayOrder(paymentMethod, paymentValue, customerId);
-		}
-	}
+        [HttpPost("place-order")]
+        public async Task<ActionResult<Order>> PlaceOrder(string paymentMethod, decimal paymentValue, int customerId)
+        {
+            var order = await _orderService.PayOrder(paymentMethod, paymentValue, customerId);
+            return Ok(order);
+        }
+    }
 }
